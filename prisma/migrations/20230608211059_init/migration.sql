@@ -74,14 +74,14 @@ CREATE TABLE "Session" (
 );
 
 -- CreateTable
-CREATE TABLE "Note" (
+CREATE TABLE "Post" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "title" TEXT NOT NULL,
     "content" TEXT NOT NULL,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL,
     "ownerId" TEXT NOT NULL,
-    CONSTRAINT "Note_ownerId_fkey" FOREIGN KEY ("ownerId") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+    CONSTRAINT "Post_ownerId_fkey" FOREIGN KEY ("ownerId") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- CreateTable
@@ -137,7 +137,7 @@ CREATE UNIQUE INDEX "Password_userId_key" ON "Password"("userId");
 CREATE UNIQUE INDEX "Verification_target_type_key" ON "Verification"("target", "type");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Note_id_key" ON "Note"("id");
+CREATE UNIQUE INDEX "Post_id_key" ON "Post"("id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "_RoleToUser_AB_unique" ON "_RoleToUser"("A", "B");

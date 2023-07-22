@@ -46,7 +46,7 @@ async function seed() {
 							},
 						},
 					},
-					notes: {
+					posts: {
 						create: Array.from({
 							length: faker.number.int({ min: 0, max: 10 }),
 						}).map(() => ({
@@ -87,7 +87,7 @@ async function seed() {
 					hash: await getPasswordHash('kodylovesyou'),
 				},
 			},
-			notes: {
+			posts: {
 				create: [
 					{
 						title: 'Basic Koala Facts',

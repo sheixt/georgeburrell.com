@@ -63,7 +63,7 @@ model User {
   imageId String? @unique
 
   password Password?
-  notes    Note[]
+  posts    Post[]
   roles    Role[]
   session  Session[]
 }
@@ -111,7 +111,7 @@ model Session {
   expirationDate DateTime
 }
 
-model Note {
+model Post {
   id        String   @id @unique @default(cuid())
   title     String
   content   String

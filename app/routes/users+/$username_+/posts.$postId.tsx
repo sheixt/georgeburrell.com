@@ -23,9 +23,9 @@ import { redirectWithToast } from '~/utils/flash-session.server.ts'
 
 export async function loader({ request, params }: DataFunctionArgs) {
 	const userId = await getUserId(request)
-	const note = await prisma.note.findUnique({
+	const post = await prisma.post.findUnique({
 		where: {
-			id: params.noteId,
+			id: params.postId,
 		},
 		select: {
 			id: true,
@@ -35,22 +35,22 @@ export async function loader({ request, params }: DataFunctionArgs) {
 			updatedAt: true,
 		},
 	})
-	if (!note) {
+	if (!post) {
 		throw new Response('Not found', { status: 404 })
 	}
-	const date = new Date(note.updatedAt)
+	const date = new Date(post.updatedAt)
 	const timeAgo = formatDistanceToNow(date)
 	return json({
-		note,
+		post,
 		timeAgo,
 		dateDisplay: date.toLocaleDateString(),
-		isOwner: userId === note.ownerId,
+		isOwner: userId === post.ownerId,
 	})
 }
 
 const DeleteFormSchema = z.object({
-	intent: z.literal('delete-note'),
-	noteId: z.string(),
+	intent: z.literal('delete-post'),
+	postId: z.string(),
 })
 
 export async function action({ request }: DataFunctionArgs) {
@@ -70,42 +70,42 @@ export async function action({ request }: DataFunctionArgs) {
 		)
 	}
 
-	const { noteId } = submission.value
+	const { postId } = submission.value
 
-	const note = await prisma.note.findFirst({
+	const post = await prisma.post.findFirst({
 		select: { id: true, owner: { select: { username: true } } },
 		where: {
-			id: noteId,
+			id: postId,
 			ownerId: userId,
 		},
 	})
-	if (!note) {
-		submission.error.noteId = ['Note not found']
+	if (!post) {
+		submission.error.postId = ['Post not found']
 		return json({ status: 'error', submission } as const, {
 			status: 404,
 		})
 	}
 
-	await prisma.note.delete({
-		where: { id: note.id },
+	await prisma.post.delete({
+		where: { id: post.id },
 	})
 
-	return redirectWithToast(`/users/${note.owner.username}/notes`, {
-		title: 'Note deleted',
+	return redirectWithToast(`/users/${post.owner.username}/posts`, {
+		title: 'Post deleted',
 		variant: 'destructive',
 	})
 }
 
-export default function NoteRoute() {
+export default function PostRoute() {
 	const data = useLoaderData<typeof loader>()
 
 	return (
 		<>
 			<div className="absolute inset-0 flex flex-col px-10">
-				<h2 className="mb-2 pt-12 text-h2 lg:mb-6">{data.note.title}</h2>
+				<h2 className="mb-2 pt-12 text-h2 lg:mb-6">{data.post.title}</h2>
 				<div className={`${data.isOwner ? 'pb-24' : 'pb-12'} overflow-y-auto`}>
 					<p className="whitespace-break-spaces text-sm md:text-lg">
-						{data.note.content}
+						{data.post.content}
 					</p>
 				</div>
 			</div>
@@ -119,7 +119,7 @@ export default function NoteRoute() {
 						{data.timeAgo} ago
 					</span>
 					<div className="grid flex-1 grid-cols-2 justify-end gap-2 min-[525px]:flex md:gap-4">
-						<DeleteNote id={data.note.id} />
+						<DeletePost id={data.post.id} />
 						<Button
 							asChild
 							className="min-[525px]:max-md:aspect-square min-[525px]:max-md:px-0"
@@ -139,12 +139,12 @@ export default function NoteRoute() {
 	)
 }
 
-export function DeleteNote({ id }: { id: string }) {
+export function DeletePost({ id }: { id: string }) {
 	const actionData = useActionData<typeof action>()
 	const navigation = useNavigation()
 	const formAction = useFormAction()
 	const [form] = useForm({
-		id: 'delete-note',
+		id: 'delete-post',
 		lastSubmission: actionData?.submission,
 		constraint: getFieldsetConstraint(DeleteFormSchema),
 		onValidate({ formData }) {
@@ -154,16 +154,16 @@ export function DeleteNote({ id }: { id: string }) {
 
 	return (
 		<Form method="post" {...form.props}>
-			<input type="hidden" name="noteId" value={id} />
+			<input type="hidden" name="postId" value={id} />
 			<StatusButton
 				type="submit"
 				name="intent"
-				value="delete-note"
+				value="delete-post"
 				variant="destructive"
 				status={
 					navigation.state === 'submitting' &&
 					navigation.formAction === formAction &&
-					navigation.formData?.get('intent') === 'delete-note' &&
+					navigation.formData?.get('intent') === 'delete-post' &&
 					navigation.formMethod === 'POST'
 						? 'pending'
 						: actionData?.status ?? 'idle'
@@ -183,7 +183,7 @@ export function ErrorBoundary() {
 	return (
 		<GeneralErrorBoundary
 			statusHandlers={{
-				404: () => <p>Note not found</p>,
+				404: () => <p>Post not found</p>,
 			}}
 		/>
 	)

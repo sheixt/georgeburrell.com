@@ -1,6 +1,6 @@
 import { json } from '@remix-run/router'
 import { type DataFunctionArgs } from '@remix-run/server-runtime'
-import { NoteEditor } from '~/routes/resources+/note-editor.tsx'
+import { PostEditor } from '~/routes/resources+/post-editor.tsx'
 import { requireUserId } from '~/utils/auth.server.ts'
 
 export async function loader({ request }: DataFunctionArgs) {
@@ -8,6 +8,6 @@ export async function loader({ request }: DataFunctionArgs) {
 	return json({})
 }
 
-export default function NewNoteRoute() {
-	return <NoteEditor />
+export default function NewPostRoute() {
+	return <PostEditor />
 }

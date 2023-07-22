@@ -136,7 +136,7 @@ export async function action({ request }: DataFunctionArgs) {
 }
 
 export const meta: V2_MetaFunction = () => {
-	return [{ title: 'Setup Epic Notes Account' }]
+	return [{ title: 'Setup Epic Posts Account' }]
 }
 
 export default function OnboardingPage() {

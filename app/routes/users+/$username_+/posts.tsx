@@ -15,7 +15,7 @@ import {
 } from '~/utils/timing.server.ts'
 
 export async function loader({ params }: DataFunctionArgs) {
-	const timings = makeTimings('notes loader')
+	const timings = makeTimings('posts loader')
 	const owner = await time(
 		() =>
 			prisma.user.findUnique({
@@ -34,9 +34,9 @@ export async function loader({ params }: DataFunctionArgs) {
 	if (!owner) {
 		throw new Response('Not found', { status: 404 })
 	}
-	const notes = await time(
+	const posts = await time(
 		() =>
-			prisma.note.findMany({
+			prisma.post.findMany({
 				where: {
 					ownerId: owner.id,
 				},
@@ -45,10 +45,10 @@ export async function loader({ params }: DataFunctionArgs) {
 					title: true,
 				},
 			}),
-		{ timings, type: 'find notes' },
+		{ timings, type: 'find posts' },
 	)
 	return json(
-		{ owner, notes },
+		{ owner, posts },
 		{ headers: { 'Server-Timing': timings.toString() } },
 	)
 }
@@ -59,7 +59,7 @@ export const headers: HeadersFunction = ({ loaderHeaders, parentHeaders }) => {
 	}
 }
 
-export default function NotesRoute() {
+export default function PostsRoute() {
 	const data = useLoaderData<typeof loader>()
 	const ownerDisplayName = data.owner.name ?? data.owner.username
 	const navLinkDefaultClassName =
@@ -79,7 +79,7 @@ export default function NotesRoute() {
 								className="h-16 w-16 rounded-full object-cover lg:h-24 lg:w-24"
 							/>
 							<h1 className="text-center text-base font-bold md:text-lg lg:text-left lg:text-2xl">
-								{ownerDisplayName}'s Notes
+								{ownerDisplayName}'s Posts
 							</h1>
 						</Link>
 						<ul className="overflow-y-auto overflow-x-hidden pb-12">
@@ -90,18 +90,18 @@ export default function NotesRoute() {
 										cn(navLinkDefaultClassName, isActive && 'bg-accent')
 									}
 								>
-									<Icon name="plus">New Note</Icon>
+									<Icon name="plus">New Post</Icon>
 								</NavLink>
 							</li>
-							{data.notes.map(note => (
-								<li key={note.id}>
+							{data.posts.map(post => (
+								<li key={post.id}>
 									<NavLink
-										to={note.id}
+										to={post.id}
 										className={({ isActive }) =>
 											cn(navLinkDefaultClassName, isActive && 'bg-accent')
 										}
 									>
-										{note.title}
+										{post.title}
 									</NavLink>
 								</li>
 							))}

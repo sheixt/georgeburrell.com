@@ -12,7 +12,7 @@ import { ErrorList, Field, TextareaField } from '~/components/forms.tsx'
 import { redirectWithToast } from '~/utils/flash-session.server.ts'
 import { floatingToolbarClassName } from '~/components/floating-toolbar.tsx'
 
-export const NoteEditorSchema = z.object({
+export const PostEditorSchema = z.object({
 	id: z.string().optional(),
 	title: z.string().min(1),
 	content: z.string().min(1),
@@ -22,7 +22,7 @@ export async function action({ request }: DataFunctionArgs) {
 	const userId = await requireUserId(request)
 	const formData = await request.formData()
 	const submission = parse(formData, {
-		schema: NoteEditorSchema,
+		schema: PostEditorSchema,
 		acceptMultipleErrors: () => true,
 	})
 	if (submission.intent !== 'submit') {
@@ -37,7 +37,7 @@ export async function action({ request }: DataFunctionArgs) {
 			{ status: 400 },
 		)
 	}
-	let note: { id: string; owner: { username: string } }
+	let post: { id: string; owner: { username: string } }
 
 	const { title, content, id } = submission.value
 
@@ -56,11 +56,11 @@ export async function action({ request }: DataFunctionArgs) {
 		},
 	}
 	if (id) {
-		const existingNote = await prisma.note.findFirst({
+		const existingPost = await prisma.post.findFirst({
 			where: { id, ownerId: userId },
 			select: { id: true },
 		})
-		if (!existingNote) {
+		if (!existingPost) {
 			return json(
 				{
 					status: 'error',
@@ -69,48 +69,48 @@ export async function action({ request }: DataFunctionArgs) {
 				{ status: 404 },
 			)
 		}
-		note = await prisma.note.update({
+		post = await prisma.post.update({
 			where: { id },
 			data,
 			select,
 		})
 	} else {
-		note = await prisma.note.create({ data, select })
+		post = await prisma.post.create({ data, select })
 	}
-	return redirectWithToast(`/users/${note.owner.username}/notes/${note.id}`, {
-		title: id ? 'Note updated' : 'Note created',
+	return redirectWithToast(`/users/${post.owner.username}/posts/${post.id}`, {
+		title: id ? 'Post updated' : 'Post created',
 	})
 }
 
-export function NoteEditor({
-	note,
+export function PostEditor({
+	post,
 }: {
-	note?: { id: string; title: string; content: string }
+	post?: { id: string; title: string; content: string }
 }) {
-	const noteEditorFetcher = useFetcher<typeof action>()
+	const postEditorFetcher = useFetcher<typeof action>()
 
 	const [form, fields] = useForm({
-		id: 'note-editor',
-		constraint: getFieldsetConstraint(NoteEditorSchema),
-		lastSubmission: noteEditorFetcher.data?.submission,
+		id: 'post-editor',
+		constraint: getFieldsetConstraint(PostEditorSchema),
+		lastSubmission: postEditorFetcher.data?.submission,
 		onValidate({ formData }) {
-			return parse(formData, { schema: NoteEditorSchema })
+			return parse(formData, { schema: PostEditorSchema })
 		},
 		defaultValue: {
-			title: note?.title,
-			content: note?.content,
+			title: post?.title,
+			content: post?.content,
 		},
 		shouldRevalidate: 'onBlur',
 	})
 
 	return (
-		<noteEditorFetcher.Form
+		<postEditorFetcher.Form
 			method="post"
-			action="/resources/note-editor"
+			action="/resources/post-editor"
 			className="flex h-full flex-col gap-y-4 overflow-x-hidden px-10 pb-28 pt-12"
 			{...form.props}
 		>
-			<input name="id" type="hidden" value={note?.id} />
+			<input name="id" type="hidden" value={post?.id} />
 			<Field
 				labelProps={{ children: 'Title' }}
 				inputProps={{
@@ -141,12 +141,12 @@ export function NoteEditor({
 				</Button>
 				<StatusButton
 					status={
-						noteEditorFetcher.state === 'submitting'
+						postEditorFetcher.state === 'submitting'
 							? 'pending'
-							: noteEditorFetcher.data?.status ?? 'idle'
+							: postEditorFetcher.data?.status ?? 'idle'
 					}
 					type="submit"
-					disabled={noteEditorFetcher.state !== 'idle'}
+					disabled={postEditorFetcher.state !== 'idle'}
 					className="min-[525px]:max-md:aspect-square min-[525px]:max-md:px-0"
 				>
 					<Icon
@@ -156,6 +156,6 @@ export function NoteEditor({
 					<span className="max-md:hidden">Submit</span>
 				</StatusButton>
 			</div>
-		</noteEditorFetcher.Form>
+		</postEditorFetcher.Form>
 	)
 }
