@@ -30,7 +30,7 @@ export function NavBar() {
 					) : (
 						<Link to="/login">
 							<Icon name="avatar">
-								<span className="sr-only">Login</span>
+								<span className="sr-only">Log in</span>
 							</Icon>
 						</Link>
 					)}
