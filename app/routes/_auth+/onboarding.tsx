@@ -136,7 +136,7 @@ export async function action({ request }: DataFunctionArgs) {
 }
 
 export const meta: V2_MetaFunction = () => {
-	return [{ title: 'Setup Epic Posts Account' }]
+	return [{ title: 'Setup Account | georgeburrell.com' }]
 }
 
 export default function OnboardingPage() {

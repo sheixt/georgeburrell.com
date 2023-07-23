@@ -30,7 +30,7 @@ export async function loader({ request }: DataFunctionArgs) {
 }
 
 export const meta: V2_MetaFunction = () => {
-	return [{ title: 'Login to Epic Posts' }]
+	return [{ title: 'Login | georgeburrell.com' }]
 }
 
 export default function LoginPage() {

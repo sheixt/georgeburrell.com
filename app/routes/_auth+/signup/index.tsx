@@ -95,7 +95,7 @@ export async function action({ request }: DataFunctionArgs) {
 
 	const response = await sendEmail({
 		to: email,
-		subject: `Welcome to Epic Posts!`,
+		subject: `Welcome to georgeburrell.com`,
 		react: <SignupEmail onboardingUrl={onboardingUrl.toString()} otp={otp} />,
 	})
 
@@ -114,7 +114,7 @@ export async function action({ request }: DataFunctionArgs) {
 }
 
 export const meta: V2_MetaFunction = () => {
-	return [{ title: 'Sign Up | Epic Posts' }]
+	return [{ title: 'Sign Up | georgeburrell.com' }]
 }
 
 export default function SignupRoute() {
