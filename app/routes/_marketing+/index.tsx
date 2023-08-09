@@ -12,13 +12,15 @@ export default function Index() {
 					<div className="relative sm:overflow-hidden sm:rounded-2xl">
 						<div className="lg:pt-18 relative px-4 pb-8 pt-8 sm:px-6 sm:pb-14 sm:pt-16 lg:px-8 lg:pb-20">
 							<h1 className="flex flex-col">
-								<span className="mx-auto mt-6 max-w-lg text-center text-xl font-bold uppercase tracking-[1em] opacity-30  sm:max-w-3xl">
+								<span className="mx-auto mt-6 max-w-lg text-center font-bold uppercase tracking-[1em] opacity-30 animate-in fade-in slide-in-from-top duration-500 sm:max-w-3xl  md:text-xl">
 									Portfolio of
 								</span>
-								<span className="text-center text-mega font-extrabold tracking-tight sm:text-8xl lg:text-9xl">
-									George Burrell
+								<span className="delay-400 text-center text-mega font-extrabold tracking-tight animate-in fade-in duration-500 delay-150 sm:text-8xl lg:text-9xl">
+									<span className="animate-bg-position bg-gradient-to-r from-pink-800 from-10% via-purple-700 to-teal-600 bg-300% bg-clip-text text-transparent">
+										George Burrell
+									</span>
 								</span>
-								<span className="ont-bold mx-auto mt-6 max-w-lg text-center text-xl uppercase tracking-[1em] opacity-30  sm:max-w-3xl">
+								<span className="mx-auto mt-6 max-w-lg text-center font-bold uppercase tracking-[1em] opacity-30 sm:max-w-3xl md:text-xl">
 									coming soon
 								</span>
 							</h1>
